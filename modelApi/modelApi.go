@@ -15,7 +15,7 @@ type ModelResponse struct {
 func SendModelRequest(message string) string {
 
 	payload := map[string]string{
-		"inputs": "summarize: " + message,
+		"inputs": "summarize the key points clearly and concisely:  " + message,
 	}
 
 	payloadBytes, err := json.Marshal(payload)
@@ -53,13 +53,26 @@ func SendModelRequest(message string) string {
 	}
 
 	fmt.Printf("Response: %s\n", string(responseBody))
-	var response ModelResponse
 
-	err := json.Unmarshal([]byte(responseBody), &response)
+	var responses []ModelResponse
+
+	err = json.Unmarshal(responseBody, &responses)
+
 	if err != nil {
-		fmt.Println("Error unmarshaling response:", err)
-		continue
+		return err.Error()
 	}
+	if len(responses) > 0 {
+		return responses[0].GeneratedText
+	} else {
+		return "No response received"
+	}
+	// var responseText ModelResponse
 
-	return string(responseBody)
+	// errrrr := json.Unmarshal(responseBody, &responseText)
+	// if errrrr != nil {
+	// 	fmt.Println("Error unmarshaling response:", err)
+
+	// }
+
+	// return string(responseText.GeneratedText)
 }
