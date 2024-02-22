@@ -18,11 +18,13 @@ func ModelCaller(input string, chunkSize int) string {
 	}
 	combinedSummary := strings.Join(summerizedChunks, " ")
 
-	if len(combinedSummary) < 1200 {
-		return SendModelRequest(combinedSummary)
-	}
-	ModelCaller(combinedSummary, 1200)
-	return "Error chunking text in modelCaller"
+	// fmt.Println("\n\nCombined summary: " + combinedSummary + "\n\n")
+	// if len(combinedSummary) < 1200 {
+	// 	return SendModelRequest(combinedSummary)
+	// }
+	// ModelCaller(combinedSummary, 1200)
+	// return "Error chunking text in modelCaller"
+	return combinedSummary
 }
 
 func ChunkText(text string, chunkSize int) []string {
