@@ -6,13 +6,23 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type ModelResponse struct {
-	GeneratedText string `json:"generated_text"`
+	GeneratedText string `json:"summary"`
 }
 
 func SendModelRequest(message string) string {
+	err := godotenv.Load()
+	if err != nil {
+		return err.Error()
+	}
+
+	uri := os.Getenv("URI")
+	auth := os.Getenv("AUTH")
 
 	payload := map[string]string{
 		"inputs": "summarize the key points clearly and concisely:  " + message,
@@ -25,7 +35,7 @@ func SendModelRequest(message string) string {
 		return err.Error()
 	}
 
-	req, err := http.NewRequest("POST", "https://b1rd2yqmtubot0gq.us-east-1.aws.endpoints.huggingface.cloud", bytes.NewBuffer(payloadBytes))
+	req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err.Error()
@@ -33,7 +43,7 @@ func SendModelRequest(message string) string {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	req.Header.Set("Authorization", "Bearer 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")
+	req.Header.Set("Authorization", auth)
 
 	client := &http.Client{}
 
@@ -66,13 +76,4 @@ func SendModelRequest(message string) string {
 	} else {
 		return "No response received"
 	}
-	// var responseText ModelResponse
-
-	// errrrr := json.Unmarshal(responseBody, &responseText)
-	// if errrrr != nil {
-	// 	fmt.Println("Error unmarshaling response:", err)
-
-	// }
-
-	// return string(responseText.GeneratedText)
 }
