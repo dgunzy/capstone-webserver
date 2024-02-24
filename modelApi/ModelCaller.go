@@ -13,6 +13,12 @@ type indexSummary struct {
 }
 
 func ModelCaller(input string, chunkSize int) string {
+	response := SendModelRequest("Are you awake?")
+
+	if response == "Service Unavailable" {
+		return "Service down, please wait a few minutes for it to start"
+	}
+
 	if len(input) < 1200 {
 		return SendModelRequest("summarize key points clearly and concisely: " + input)
 	}
