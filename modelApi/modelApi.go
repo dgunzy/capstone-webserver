@@ -25,7 +25,7 @@ func SendModelRequest(message string) string {
 	auth := os.Getenv("AUTH")
 
 	payload := map[string]string{
-		"inputs": "summarize the key points clearly and concisely:  " + message,
+		"inputs": message,
 	}
 
 	payloadBytes, err := json.Marshal(payload)

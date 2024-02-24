@@ -16,11 +16,11 @@ func ModelCaller(input string, chunkSize int) string {
 	response := SendModelRequest("Are you awake?")
 
 	if response == "Service Unavailable" {
-		return "Service down, please wait a few minutes for it to start"
+		return "Service Unavailable"
 	}
 
 	if len(input) < 1200 {
-		return SendModelRequest("summarize key points clearly and concisely: " + input)
+		return SendModelRequest("summarize all key points: " + input)
 	}
 	chunks := ChunkText(input, chunkSize)
 	// This used to be a channel of strings, but they would be unsorted, so they are a channel of structs that contain an index to sort
@@ -32,7 +32,7 @@ func ModelCaller(input string, chunkSize int) string {
 
 		go func(index int, chunk string) {
 			defer waitGroup.Done()
-			fmt.Println("Chunk: \n" + chunk)
+			// fmt.Println("Chunk: \n" + chunk)
 			summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
 		}(i, chunk)
 	}
@@ -54,10 +54,12 @@ func ModelCaller(input string, chunkSize int) string {
 	}
 
 	combinedSummary := strings.Join(orderedSummaries, " ")
+
+	fmt.Println("Combine summary is: " + combinedSummary)
 	if len(combinedSummary) < 1200 {
-		return SendModelRequest("summarize key points clearly and concisely: " + combinedSummary)
+		return SendModelRequest("summarize all key points: " + combinedSummary)
 	}
-	return combinedSummary
+	return ModelCaller(combinedSummary, 1200)
 }
 
 func ChunkText(text string, chunkSize int) []string {

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Example Template</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>{{.Title}}</h1>
+    <h2>Submit Text for Summarization</h2>
+
+    <form hx-post="/summarize" hx-target="#summaryResult">
+        <textarea id="inputText" name="inputText" rows="10" cols="50" required></textarea><br>
+        <button type="submit">Summarize</button>
+    </form>
+
+    <div id="summaryResult">
+    </div>
+</body>
+</html>
