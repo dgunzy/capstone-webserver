@@ -2,28 +2,56 @@ package modelApi
 
 import (
 	"fmt"
+	"sort"
 	"strings"
+	"sync"
 )
+
+type indexSummary struct {
+	index   int
+	summary string
+}
 
 func ModelCaller(input string, chunkSize int) string {
 	if len(input) < 1200 {
 		return SendModelRequest("summarize key points clearly and concisely: " + input)
 	}
 	chunks := ChunkText(input, chunkSize)
+	// This used to be a channel of strings, but they would be unsorted, so they are a channel of structs that contain an index to sort
+	summaryChannel := make(chan indexSummary, len(chunks))
+	var waitGroup sync.WaitGroup
 
-	var summerizedChunks []string
-	for _, chunk := range chunks {
-		fmt.Println("Chunk: \n" + chunk)
-		summerizedChunks = append(summerizedChunks, SendModelRequest("summarize: "+chunk))
+	for i, chunk := range chunks {
+		waitGroup.Add(1)
+
+		go func(index int, chunk string) {
+			defer waitGroup.Done()
+			fmt.Println("Chunk: \n" + chunk)
+			summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
+		}(i, chunk)
 	}
-	combinedSummary := strings.Join(summerizedChunks, " ")
 
-	// fmt.Println("\n\nCombined summary: " + combinedSummary + "\n\n")
+	waitGroup.Wait()
+	close(summaryChannel)
+
+	var summarizedChunks []indexSummary
+	for summary := range summaryChannel {
+		summarizedChunks = append(summarizedChunks, summary)
+	}
+	sort.Slice(summarizedChunks, func(i, j int) bool {
+		return summarizedChunks[i].index < summarizedChunks[j].index
+	})
+
+	var orderedSummaries []string
+	for _, summary := range summarizedChunks {
+		orderedSummaries = append(orderedSummaries, summary.summary)
+	}
+
+	combinedSummary := strings.Join(orderedSummaries, " ")
 	if len(combinedSummary) < 1200 {
 		return SendModelRequest("summarize key points clearly and concisely: " + combinedSummary)
 	}
-	ModelCaller(combinedSummary, 1200)
-	return "Error chunking text in modelCaller"
+	return combinedSummary
 }
 
 func ChunkText(text string, chunkSize int) []string {
