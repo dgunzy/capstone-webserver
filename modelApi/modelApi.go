@@ -61,6 +61,9 @@ func SendModelRequest(message string) string {
 		fmt.Println("Error reading response body:", err)
 		return err.Error()
 	}
+	if response.StatusCode != http.StatusOK {
+		return "Service Unavailable"
+	}
 
 	fmt.Printf("Response: %s\n", string(responseBody))
 
