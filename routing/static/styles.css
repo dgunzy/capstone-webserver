@@ -1,0 +1,133 @@
+/* styles.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  color: white;
+  background-color: #121212;
+}
+
+header {
+  background-color: #004d26;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#logo {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+#nav-links a {
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  transition: color 0.3s;
+}
+
+#nav-links a:hover {
+  color: #aaaaaa;
+}
+
+.hero-buttons a.button {
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  background-color: #008037;
+  color: white;
+  border-radius: 0.25rem;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.hero-buttons a.button:hover {
+  background-color: #00a94f;
+}
+
+#features {
+  padding: 2rem;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.feature {
+  background-color: #006633;
+  border-radius: 0.5rem;
+  margin: 1rem;
+  padding: 1rem;
+  flex-basis: calc(33.333% - 2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background-color 0.3s;
+  min-width: 250px; /* Prevent the boxes from becoming too narrow */
+}
+
+.feature:hover {
+  background-color: #007845;
+}
+
+.feature .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  margin: 0.5rem 0;
+}
+
+.feature p {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .feature {
+      flex-basis: calc(50% - 2rem);
+  }
+
+  .hero-buttons a.button {
+      display: block;
+      margin: 0.5rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  #nav-links {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+  }
+
+  #nav-links a {
+      width: 100%;
+      text-align: center;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+  }
+
+  .feature {
+      flex-basis: 100%;
+      max-width: 90%; /* Adjust the max width for mobile devices */
+      margin: 1rem auto; /* Center the feature boxes */
+  }
+
+  .hero-buttons {
+      flex-direction: column;
+  }
+
+  .hero-buttons a.button {
+      width: 80%;
+      margin: 0.5rem auto;
+  }
+}
