@@ -2,6 +2,10 @@ name: Build web app and push image to aws ecr
 on:
     push:
         branches: [ main ]
+permissions:
+  contents: write
+  packages: write
+        
 jobs:
     build-and-push:
         name: Build and push to ecr
@@ -29,6 +33,10 @@ jobs:
         - name: Automatic Tagging of Releases
           id: increment-git-tag
           run: |
+            git config --global user.email "actions@github.com"
+            git config --global user.name "GitHub Actions"
+            git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64)"
+
             bash ./build/git_update.sh -v major 
          
     
