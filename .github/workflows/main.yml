@@ -6,6 +6,9 @@ jobs:
     build-and-push:
         name: Build and push to ecr
         runs-on: ubuntu-latest
+        env: 
+            AWS_REGION: us-east-1
+            ECR_REPOSITORY: capstone-go-server
         steps:
         - name: Checkout
           uses: actions/checkout@v2
@@ -15,7 +18,7 @@ jobs:
           with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
+            aws-region: ${{ env.AWS_REGION }}
     
         - name: Login to Amazon ECR
           id: login-ecr
@@ -28,44 +31,35 @@ jobs:
     
         - name: Build, Tag, and Push the Image to Amazon ECR
           id: build-image
-          env:
-            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            ECR_REPOSITORY: capstone-go-server
-            IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
           run: |
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
-
+            docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.increment-git-tag.outputs.git-tag }} .
+            docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.increment-git-tag.outputs.git-tag }}  
 
         - name: Generate Dockerrun.aws.json file
-          env:
-            URI: ${{ secrets.URI }}
-            AUTH: ${{ secrets.AUTH }}
           run: |
-            echo '{
-            "AWSEBDockerrunVersion": "1",
-            "Image": {
-              "Name": "'$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'",
-              "Update": "true"
-            },
-            "Ports": [
-              {
-                "ContainerPort": "8080"
-              }
-            ],
-            "Environment": [
-              {
-                "Name": "URI",
-                "Value": "'$URI'"
+            echo "{
+              \"AWSEBDockerrunVersion\": \"1\",
+              \"Image\": {
+                \"Name\": \"${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.increment-git-tag.outputs.git-tag }}\",
+                \"Update\": \"true\"
               },
-              {
-                "Name": "AUTH",
-                "Value": "'$AUTH'"
-              }
-            ]
-            }' > Dockerrun.aws.json
-          
-    
+              \"Ports\": [
+                {
+                  \"ContainerPort\": \"8080\"
+                }
+              ],
+              \"Environment\": [
+                {
+                  \"Name\": \"URI\",
+                  \"Value\": \"${{ secrets.URI }}\"
+                },
+                {
+                  \"Name\": \"AUTH\",
+                  \"Value\": \"${{ secrets.AUTH }}\"
+                }
+              ]
+            }" > Dockerrun.aws.json
+
     
         - name: Deploy to Elastic Beanstalk
           env:
