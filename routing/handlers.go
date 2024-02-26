@@ -32,7 +32,7 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles("routing/templates/summaryTemplate.gohtml"))
 
-	text := r.FormValue("inputText")
+	text := r.FormValue("dynamicTextarea")
 
 	fmt.Println("The input text is: " + text)
 	summaryText := modelApi.ModelCaller(text, 1200)
@@ -41,8 +41,26 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		if err := tmpl.Execute(w, "Service is down, please wait a few minutes for it to boot up."); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+		return
 	}
 	if err := tmpl.Execute(w, summaryText); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}
+
+func Texthandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("routing/templates/uploadtext.gohtml"))
+
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func Filehandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("routing/templates/uploadfile.gohtml"))
+
+	if err := tmpl.Execute(w, nil); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
