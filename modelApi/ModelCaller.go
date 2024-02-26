@@ -1,7 +1,6 @@
 package modelApi
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -55,7 +54,7 @@ func ModelCaller(input string, chunkSize int) string {
 
 	combinedSummary := strings.Join(orderedSummaries, " ")
 
-	fmt.Println("Combine summary is: " + combinedSummary)
+	// fmt.Println("Combine summary is: " + combinedSummary)
 	if len(combinedSummary) < 1200 {
 		return SendModelRequest("summarize all key points: " + combinedSummary)
 	}

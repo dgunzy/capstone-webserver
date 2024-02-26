@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -38,9 +37,9 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("The input text is: " + text)
+	// fmt.Println("The input text is: " + text)
 	summaryText := modelApi.ModelCaller(text, 1200)
-	fmt.Println("The model produced this summary: " + summaryText)
+	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "Service is down, please wait a few minutes for it to boot up."); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,9 +84,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	text := r.FormValue("extractedText")
 
-	fmt.Println("The input text is: " + text)
+	// fmt.Println("The input text is: " + text)
 	summaryText := modelApi.ModelCaller(text, 1200)
-	fmt.Println("The model produced this summary: " + summaryText)
+	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "Service is down, please wait a few minutes for it to boot up."); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

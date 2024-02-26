@@ -18,7 +18,7 @@ type ModelResponse struct {
 func SendModelRequest(message string) string {
 	err := godotenv.Load()
 	if err != nil {
-		return err.Error()
+		fmt.Println(" no .env selected")
 	}
 
 	uri := os.Getenv("URI")
@@ -65,7 +65,7 @@ func SendModelRequest(message string) string {
 		return "Service Unavailable"
 	}
 
-	fmt.Printf("Response: %s\n", string(responseBody))
+	// fmt.Printf("Response: %s\n", string(responseBody))
 
 	var responses []ModelResponse
 

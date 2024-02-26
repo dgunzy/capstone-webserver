@@ -13,8 +13,8 @@ import (
 func main() {
 
 	router := routing.SetupRoutes()
-	fmt.Println("Server running on 8069")
-	if err := http.ListenAndServe(":8069", router); err != nil {
+	fmt.Println("Server running on 8080")
+	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
 	}
 	// fmt.Println("Hello")
