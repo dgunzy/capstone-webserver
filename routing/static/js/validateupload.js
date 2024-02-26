@@ -40,4 +40,15 @@ document.addEventListener('DOMContentLoaded', function () {
         fileReader.readAsArrayBuffer(file);
     });
 
+    document.addEventListener('htmx:beforeRequest', function() {
+        document.querySelector('.htmx-indicator').classList.remove('hidden');
+        document.getElementById('submit-button').classList.add('hidden');
+    });
+    
+    document.addEventListener('htmx:afterRequest', function() {
+        document.querySelector('.htmx-indicator').classList.add('hidden');
+        document.getElementById('submit-button').classList.remove('hidden'); 
+    });
+    
+    
 });
