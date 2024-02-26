@@ -35,4 +35,45 @@ jobs:
           run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
+
+
+        - name: Generate Dockerrun.aws.json file
+          env:
+            URI: ${{ secrets.URI }}
+            AUTH: ${{ secrets.AUTH }}
+          run: |
+            echo '{
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "'$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "8080"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "URI",
+                "Value": "'$URI'"
+              },
+              {
+                "Name": "AUTH",
+                "Value": "'$AUTH'"
+              }
+            ]
+            }' > Dockerrun.aws.json
           
+    
+    
+        - name: Deploy to Elastic Beanstalk
+          env:
+              EB_APP_NAME: capstone-go-v2
+              EB_ENV: Capstone-go-v2-env
+              VERSION_LABEL: ${{ env.GITHUB_SHA }}
+          run: |
+              zip deploy.zip Dockerrun.aws.json
+              aws s3 cp deploy.zips3://capstone-go-deployment-bucket/$VERSION_LABEL.zip
+              aws elasticbeanstalk create-application-version --application-name $EB_APP_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket="s3://capstone-go-deployment-bucket/",S3Key="$VERSION_LABEL.zip"
+              aws elasticbeanstalk update-environment --environment-name $EB_ENV --version-label $VERSION_LABEL         
