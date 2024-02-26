@@ -73,7 +73,7 @@ jobs:
               EB_ENV: Capstone-go-v2-env
               VERSION_LABEL: ${{ env.GITHUB_SHA }}
           run: |
-              zip deploy.zip Dockerrun.aws.json
-              aws s3 cp deploy.zips3://capstone-go-deployment-bucket/$VERSION_LABEL.zip
-              aws elasticbeanstalk create-application-version --application-name $EB_APP_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket="s3://capstone-go-deployment-bucket/",S3Key="$VERSION_LABEL.zip"
-              aws elasticbeanstalk update-environment --environment-name $EB_ENV --version-label $VERSION_LABEL         
+            zip deploy.zip Dockerrun.aws.json
+            aws s3 cp deploy.zip s3://capstone-go-deployment-bucket/$VERSION_LABEL.zip
+            aws elasticbeanstalk create-application-version --application-name $EB_APP_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket="capstone-go-deployment-bucket",S3Key="$VERSION_LABEL.zip"
+            aws elasticbeanstalk update-environment --environment-name $EB_ENV --version-label $VERSION_LABEL
