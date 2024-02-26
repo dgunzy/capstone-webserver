@@ -11,5 +11,7 @@ func SetupRoutes() *http.ServeMux {
 
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/summarize", SummaryHandler)
+	mux.HandleFunc("/uploadtext", Texthandler)
+	mux.HandleFunc("/uploadfile", Filehandler)
 	return mux
 }
