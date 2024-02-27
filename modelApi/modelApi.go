@@ -24,8 +24,6 @@ func SendModelRequest(message string) string {
 	uri := os.Getenv("URI")
 	auth := os.Getenv("AUTH")
 
-	fmt.Println("URI is " + uri)
-	fmt.Println("AUTH is " + auth)
 	payload := map[string]string{
 		"inputs": message,
 	}
