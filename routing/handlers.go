@@ -98,3 +98,11 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func AboutHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("routing/templates/about.gohtml"))
+
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
