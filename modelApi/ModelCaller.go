@@ -19,6 +19,10 @@ func ModelCaller(input string, chunkSize int) string {
 		return "Service Unavailable"
 	}
 
+	if len(input) > 50000 {
+		return "Text to long to summarize - Fix coming soon!"
+	}
+
 	if len(input) < chunkSize {
 		return SendModelRequest("summarize: " + input)
 	}
