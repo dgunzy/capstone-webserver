@@ -38,7 +38,7 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// fmt.Println("The input text is: " + text)
-	summaryText := modelApi.ModelCaller(text, 1200)
+	summaryText := modelApi.ModelCaller(text, 5000)
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "Service is down, please wait a few minutes for it to boot up."); err != nil {
@@ -85,7 +85,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.FormValue("extractedText")
 
 	// fmt.Println("The input text is: " + text)
-	summaryText := modelApi.ModelCaller(text, 1200)
+	summaryText := modelApi.ModelCaller(text, 5000)
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "Service is down, please wait a few minutes for it to boot up."); err != nil {

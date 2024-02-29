@@ -1,6 +1,7 @@
 package modelApi
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -18,8 +19,8 @@ func ModelCaller(input string, chunkSize int) string {
 		return "Service Unavailable"
 	}
 
-	if len(input) < 1200 {
-		return SendModelRequest("summarize all key points: " + input)
+	if len(input) < chunkSize {
+		return SendModelRequest("summarize: " + input)
 	}
 	chunks := ChunkText(input, chunkSize)
 	// This used to be a channel of strings, but they would be unsorted,
@@ -50,16 +51,17 @@ func ModelCaller(input string, chunkSize int) string {
 
 	var orderedSummaries []string
 	for _, summary := range summarizedChunks {
+		fmt.Println("Single summarized chunk: \n\n" + summary.summary + "\n")
 		orderedSummaries = append(orderedSummaries, summary.summary)
 	}
 
 	combinedSummary := strings.Join(orderedSummaries, " ")
 
-	// fmt.Println("Combine summary is: " + combinedSummary)
-	if len(combinedSummary) < 1200 {
+	fmt.Println("Combined summarized chunk: \n\n" + combinedSummary + "\n")
+	if len(combinedSummary) < chunkSize {
 		return SendModelRequest("summarize all key points: " + combinedSummary)
 	}
-	return ModelCaller(combinedSummary, 1200)
+	return ModelCaller(combinedSummary, chunkSize)
 }
 
 func ChunkText(text string, chunkSize int) []string {

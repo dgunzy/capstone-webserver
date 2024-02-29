@@ -12,7 +12,7 @@ import (
 )
 
 type ModelResponse struct {
-	GeneratedText string `json:"summary"`
+	GeneratedText string `json:"summary_text"`
 }
 
 func SendModelRequest(message string) string {
