@@ -84,11 +84,14 @@
       }
       
       <span class="text-green-400">// After all the goroutines are executed, the summary Channel</span>
-      <span class="text-green-400">// Containing a slice of responses in order is ready </span>
+      <span class="text-green-400">// Containing a slice of structs is ready to be sorted.</span>
       waitGroup.Wait()
       close(summaryChannel)</code></pre>
               </div>
           </div>
+          <p class="mt-4 text-lg">
+            I was finding the summaries that the model would create would be short. That is mostly because during the fine tuning of the google-flan-T5 model i used the title of each document as the output. I then fine tuned a facebook-bart-cnn model which was already built for summarization on the <a style="color: aqua;" href="https://huggingface.co/datasets/billsum/viewer/default/test?row=0">Billsum</a> dataset. On this fine tuning job i used the 'text' as the input, and the 'summary' as a output. This caused this new model to produce a much better summary then the first attempt.
+        </p>
         </div>
  </section>
 </body>

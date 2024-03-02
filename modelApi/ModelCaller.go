@@ -20,7 +20,7 @@ func ModelCaller(input string, chunkSize int) string {
 	}
 
 	if len(input) > 50000 {
-		return "Text to long to summarize - Fix coming soon!"
+		return "Text to long to summarize - Fix coming soon! Try uploading a smaller chunk of text."
 	}
 
 	if len(input) < chunkSize {
