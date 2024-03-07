@@ -1,8 +1,10 @@
 package routing
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 
 	"github.com/dgunzy/capstone-webserver/modelApi"
 )
@@ -36,9 +38,16 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	if text == "" {
 		return
 	}
+	reg, err := regexp.Compile(`["']|\s{2,}`)
+	if err != nil {
+		fmt.Println("Error compiling regex ", err)
+		return
+	}
+
+	newText := reg.ReplaceAllString(text, "")
 
 	// fmt.Println("The input text is: " + text)
-	summaryText := modelApi.ModelCaller(text, 5000)
+	summaryText := modelApi.ModelCaller(newText, 5000)
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
@@ -84,6 +93,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("routing/templates/summaryTemplate.gohtml"))
 
 	text := r.FormValue("extractedText")
+
+	reg, err := regexp.Compile(`["']|\s{2,}`)
+	if err != nil {
+		fmt.Println("Error compiling regex ", err)
+		return
+	}
+
+	text = reg.ReplaceAllString(text, "")
 
 	// fmt.Println("The input text is: " + text)
 	summaryText := modelApi.ModelCaller(text, 5000)
