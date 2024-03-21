@@ -28,6 +28,7 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	warningTempl := template.Must(template.ParseFiles("routing/templates/warning.gohtml"))
 	tmpl := template.Must(template.ParseFiles("routing/templates/summaryTemplate.gohtml"))
 
 	text := r.FormValue("dynamicTextarea")
@@ -47,7 +48,7 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	summaryText := modelApi.ModelCaller(newText, 5000)
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
-		if err := tmpl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
+		if err := warningTempl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -87,6 +88,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl := template.Must(template.ParseFiles("routing/templates/summaryTemplate.gohtml"))
+	warningTempl := template.Must(template.ParseFiles("routing/templates/warning.gohtml"))
 
 	text := r.FormValue("extractedText")
 
@@ -102,7 +104,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	summaryText := modelApi.ModelCaller(text, 5000)
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
-		if err := tmpl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
+		if err := warningTempl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
