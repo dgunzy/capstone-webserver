@@ -1,16 +1,21 @@
 package modelApi
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
+	"time"
 )
 
 type indexSummary struct {
 	index   int
 	summary string
 }
+
+const (
+	requestRate = 5.0 // requests per second
+	burst       = 5   // maximum burst size
+)
 
 func ModelCaller(input string, chunkSize int) string {
 	response := SendModelRequest("Are you awake?")
@@ -19,12 +24,13 @@ func ModelCaller(input string, chunkSize int) string {
 		return "Service Unavailable"
 	}
 
-	if len(input) > 50000 {
-		return "Text to long to summarize - Fix coming soon! Try uploading a smaller chunk of text."
-	}
-
 	if len(input) < chunkSize {
 		return SendModelRequest("summarize: " + input)
+	}
+
+	if len(input) > 200000 {
+		return "Input too large. Please input a smaller text."
+
 	}
 	chunks := ChunkText(input, chunkSize)
 	// This used to be a channel of strings, but they would be unsorted,
@@ -32,13 +38,31 @@ func ModelCaller(input string, chunkSize int) string {
 	summaryChannel := make(chan indexSummary, len(chunks))
 	var waitGroup sync.WaitGroup
 
-	for i, chunk := range chunks {
-		waitGroup.Add(1)
+	if len(input) > 50000 {
+		rateLimiter := NewRateLimiter(requestRate, burst)
+		for i, chunk := range chunks {
+			waitGroup.Add(1)
+			go func(index int, chunk string) {
+				defer waitGroup.Done()
 
-		go func(index int, chunk string) {
-			defer waitGroup.Done()
-			summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
-		}(i, chunk)
+				if !rateLimiter.Allow() {
+					time.Sleep(time.Second / requestRate)
+				}
+
+				summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
+			}(i, chunk)
+		}
+
+	} else {
+		for i, chunk := range chunks {
+			waitGroup.Add(1)
+
+			go func(index int, chunk string) {
+				defer waitGroup.Done()
+				summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
+			}(i, chunk)
+		}
+
 	}
 	//After all the goroutines are executed, the summary Channel
 	//Containing a slice of responses in order is ready
@@ -55,13 +79,13 @@ func ModelCaller(input string, chunkSize int) string {
 
 	var orderedSummaries []string
 	for _, summary := range summarizedChunks {
-		fmt.Println("Single summarized chunk: \n\n" + summary.summary + "\n")
+		// fmt.Println("Single summarized chunk: \n\n" + summary.summary + "\n")
 		orderedSummaries = append(orderedSummaries, summary.summary)
 	}
 
 	combinedSummary := strings.Join(orderedSummaries, " ")
 
-	fmt.Println("Combined summarized chunk: \n\n" + combinedSummary + "\n")
+	// fmt.Println("Combined summarized chunk: \n\n" + combinedSummary + "\n")
 	if len(combinedSummary) < chunkSize {
 		return SendModelRequest("summarize all key points: " + combinedSummary)
 	}

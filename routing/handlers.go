@@ -9,12 +9,9 @@ import (
 	"github.com/dgunzy/capstone-webserver/modelApi"
 )
 
-// HomeHandler handles requests to the home page.
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("routing/templates/index.gohtml"))
-	// data := map[string]interface{}{
-	// 	"Title": "HTMX Example",
-	// }
+
 	if err := tmpl.Execute(w, nil); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -51,7 +48,6 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("The model produced this summary: " + summaryText)
 	if summaryText == "Service Unavailable" {
 		if err := tmpl.Execute(w, "AI Endpoint is down, please wait a 2 - 5 minutes for it to boot up for your session."); err != nil {
-
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return

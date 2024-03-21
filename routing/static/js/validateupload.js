@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const fileInput = document.getElementById('dropzone-file');
     const submitButton = document.getElementById('submit-button'); 
     const notificationDiv = document.getElementById('notification');
+    const warningDiv = document.getElementById('warning');
+    
 
     fileInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
@@ -30,6 +32,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     pdfText = pdfText.replace(/\s+/g, ' ');
                     pdfText = pdfText.replace(/\.{2,}/g, ' ');
                     pdfText = pdfText.replace(/\S*@\S*/g, '');
+                    if (pdfText.length > 50000) {
+                        warningDiv.innerText = 'This is a long file, processing may take a few minutes.'; 
+                      } else {
+                        warningDiv.innerText = ''; 
+                      }
+
                     notificationDiv.innerText = 'PDF processing complete. You can now submit the text.';
                     document.getElementById('extracted-text').value = pdfText; 
                     submitButton.disabled = false; 
@@ -47,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
     document.addEventListener('htmx:afterRequest', function() {
         document.querySelector('.htmx-indicator').classList.add('hidden');
-        document.getElementById('submit-button').classList.remove('hidden'); 
+        document.getElementById('submit-button').classList.remove('hidden');
+        document.getElementById('warning').innerText = ''; 
     });
     
     
