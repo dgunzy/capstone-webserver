@@ -11,11 +11,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type ModelRequest struct {
+	Inputs   string `json:"inputs"`
+	NumBeams int    `json:"num_beams,omitempty"`
+}
+
 type ModelResponse struct {
 	GeneratedText string `json:"summary_text"`
 }
 
-func SendModelRequest(message string) string {
+func SendModelRequest(message string, numBeams ...int) string {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println(" no .env selected")
@@ -24,8 +29,14 @@ func SendModelRequest(message string) string {
 	uri := os.Getenv("URI")
 	auth := os.Getenv("AUTH")
 
-	payload := map[string]string{
-		"inputs": message,
+	var nb int
+	if len(numBeams) > 0 {
+		nb = numBeams[0]
+	}
+
+	payload := ModelRequest{
+		Inputs:   message,
+		NumBeams: nb,
 	}
 
 	payloadBytes, err := json.Marshal(payload)

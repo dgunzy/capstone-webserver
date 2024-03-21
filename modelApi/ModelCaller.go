@@ -13,8 +13,8 @@ type indexSummary struct {
 }
 
 const (
-	requestRate = 5.0 // requests per second
-	burst       = 5   // maximum burst size
+	requestRate = 6.0 // requests per second
+	burst       = 6   // maximum burst size
 )
 
 func ModelCaller(input string, chunkSize int) string {
@@ -23,9 +23,9 @@ func ModelCaller(input string, chunkSize int) string {
 	if response == "Service Unavailable" {
 		return "Service Unavailable"
 	}
-
+	// fmt.Println(len(input))
 	if len(input) < chunkSize {
-		return SendModelRequest("summarize: " + input)
+		return SendModelRequest("summarize: "+input, 6)
 	}
 
 	if len(input) > 200000 {
@@ -49,7 +49,7 @@ func ModelCaller(input string, chunkSize int) string {
 					time.Sleep(time.Second / requestRate)
 				}
 
-				summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: " + chunk)}
+				summaryChannel <- indexSummary{index: index, summary: SendModelRequest("summarize: "+chunk, 1)}
 			}(i, chunk)
 		}
 
@@ -87,7 +87,7 @@ func ModelCaller(input string, chunkSize int) string {
 
 	// fmt.Println("Combined summarized chunk: \n\n" + combinedSummary + "\n")
 	if len(combinedSummary) < chunkSize {
-		return SendModelRequest("summarize all key points: " + combinedSummary)
+		return SendModelRequest("summarize all key points: "+combinedSummary, 6)
 	}
 	return ModelCaller(combinedSummary, chunkSize)
 }

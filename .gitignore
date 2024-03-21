@@ -20,6 +20,7 @@
 
 # Go workspace file
 go.work
+testTimes.txt
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
