@@ -15,8 +15,8 @@ func main() {
 
 	port := os.Getenv("PORT")
 	router := routing.SetupRoutes()
-	fmt.Println("Server running on 8080")
-	if err := http.ListenAndServe(port, router); err != nil {
+	fmt.Printf("Server running on port %s\n", port)
+	if err := http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatal(err)
 	}
 
