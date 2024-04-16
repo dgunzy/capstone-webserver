@@ -38,7 +38,7 @@ func ModelCaller(input string, chunkSize int) string {
 	summaryChannel := make(chan indexSummary, len(chunks))
 	var waitGroup sync.WaitGroup
 
-	if len(input) > 20000 {
+	if len(input) > 50000 {
 		rateLimiter := NewRateLimiter(requestRate, burst)
 		for i, chunk := range chunks {
 			waitGroup.Add(1)

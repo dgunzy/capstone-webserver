@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
           pdfText = pdfText.replace(/\s+/g, " ");
           pdfText = pdfText.replace(/\.{2,}/g, " ");
           pdfText = pdfText.replace(/\S*@\S*/g, "");
-          if (pdfText.length > 20000) {
+          if (pdfText.length > 50000) {
             warningDiv.innerText =
               "This is a long file, processing may take a few minutes.";
           } else {
