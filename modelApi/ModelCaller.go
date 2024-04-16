@@ -33,12 +33,12 @@ func ModelCaller(input string, chunkSize int) string {
 
 	}
 	chunks := ChunkText(input, chunkSize)
-	// This used to be a channel of strings, but they would be unsorted,
+	// I started with a channel of strings, but they would be unsorted,
 	// so they are a channel of structs that contain an index to sort
 	summaryChannel := make(chan indexSummary, len(chunks))
 	var waitGroup sync.WaitGroup
 
-	if len(input) > 50000 {
+	if len(input) > 20000 {
 		rateLimiter := NewRateLimiter(requestRate, burst)
 		for i, chunk := range chunks {
 			waitGroup.Add(1)
